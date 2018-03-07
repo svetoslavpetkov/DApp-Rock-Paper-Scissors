@@ -1,0 +1,220 @@
+pragma solidity ^0.4.20;
+import "Destructible.sol";
+
+
+library Model{
+    struct GameData{
+        address player1;
+        uint8[5] player1Moves;
+        
+        address player2;
+        uint8[5] player2Moves;
+    }
+    
+    function getWinner(GameData storage self) public view returns(uint8){
+        uint8 player1Wins;
+        uint8 player2Wins;
+        
+        for(uint i=0; i<5;i++){
+            uint8 roundWin = getWiningMove(self.player1Moves[i], self.player2Moves[i]);
+            if(roundWin == 1){
+                player1Wins++;
+            }
+            if(roundWin == 2){
+                player2Wins++;
+            }
+        }
+        
+        if(player1Wins == player2Wins)
+            return 0;
+        if(player1Wins > player2Wins)
+            return 1;
+        return 2;
+    }
+    
+    function getWiningMove(uint8 player1Move, uint8 player2Move) public pure returns(uint8){
+        if(player1Move == player2Move)
+            return uint8(0);
+        if(
+            (player1Move == uint8(GameMove.Rock) && player2Move == uint8(GameMove.Scissors))
+            || (player1Move == uint8(GameMove.Paper) && player2Move == uint8(GameMove.Rock))
+            || (player1Move == uint8(GameMove.Scissors) && player2Move == uint8(GameMove.Paper))
+            ){
+            return uint8(1);
+        }
+        
+        return uint8(2);
+    } 
+    
+    enum GameMove{
+        Rock,
+        Paper,
+        Scissors
+    }
+    
+    struct GameRequest{
+        uint8[5] playerMoves;
+        uint value;
+        bool hasValue;
+    }
+}
+
+contract Game is Ownable
+{
+    uint8 private winner;
+    bool private _isOpen;
+    uint constant tax = 1 finney;
+    
+    address private player1;
+    uint8[5] private player1Moves;
+    uint8 private player1Score;
+    
+    address private player2;
+    uint8[5] private player2Moves;
+    uint8 private player2Score;
+    
+    using Model for Model.GameMove;
+    
+    function Game(address _player1,uint8 _player1Move0,uint8 _player1Move1,uint8 _player1Move2,uint8 _player1Move3,uint8 _player1Move4 ) public{
+        player1 = _player1;
+        player1Moves[0] = _player1Move0;
+        player1Moves[1] = _player1Move1;
+        player1Moves[2] = _player1Move2;
+        player1Moves[3] = _player1Move3;
+        player1Moves[4] = _player1Move4;
+        _isOpen = true;
+    }
+    
+    function evaluateGame(address _player2,uint8 _player2Move0,uint8 _player2Move1,uint8 _player2Move2,uint8 _player2Move3,uint8 _player2Move4 ) public onlyOwner isOpened{
+        player2 = _player2;
+        player2Moves[0] = _player2Move0;
+        player2Moves[1] = _player2Move1;
+        player2Moves[2] = _player2Move2;
+        player2Moves[3] = _player2Move3;
+        player2Moves[4] = _player2Move4;
+        
+        for(uint i=0; i<5;i++){
+            uint8 roundWin = getWiningMove(player1Moves[i], player2Moves[i]);
+            if(roundWin == 1){
+                player1Score++;
+            }
+            if(roundWin == 2){
+                player2Score++;
+            }
+        }
+        
+        if(player1Score == player2Score)
+            winner = 0;
+        if(player1Score > player2Score)
+            winner = 1;
+        winner = 2;
+        
+        _isOpen = false;
+    }
+    
+    function getWiningMove(uint8 player1Move, uint8 player2Move) public pure returns(uint8){
+        if(player1Move == player2Move)
+            return uint8(0);
+        if(
+            (player1Move == uint8(Model.GameMove.Rock) && player2Move == uint8(Model.GameMove.Scissors))
+            || (player1Move == uint8(Model.GameMove.Paper) && player2Move == uint8(Model.GameMove.Rock))
+            || (player1Move == uint8(Model.GameMove.Scissors) && player2Move == uint8(Model.GameMove.Paper))
+            ){
+            return uint8(1);
+        }
+        
+        return uint8(2);
+    }
+    
+    function isGameOpened() public view returns(bool) { return _isOpen; }
+    
+    function getWinner() public view isClosed returns(uint8){ return winner;}
+    
+    function getPlayer1Moves() public view isClosed returns(uint8[5]){ return player1Moves; }
+    function getPlayer2Moves() public view isClosed returns(uint8[5]){ return player2Moves; }
+    
+    function getPlayer1Score() public view isClosed returns(uint8){
+        return player1Score;
+    }
+    
+    function getPlayer2Score() public view isClosed returns(uint8){
+        return player2Score;
+    }
+    
+    function getPlayer1() public view returns(address){
+        return player1;
+    }
+    
+    function getPlayer2() public view returns(address){
+        return player2;
+    }
+    
+    function getBallance() public view returns(uint){ return this.balance;}
+    
+    modifier isOpened {
+        require(_isOpen);
+        _;
+    }
+    
+   modifier isClosed {
+        require(!_isOpen);
+        _;
+    }
+}
+
+contract GameBoard is Destructible{
+    using Model for Model.GameData;
+    using Model for Model.GameRequest;
+    
+    uint constant minBidValue = 10 finney;
+    
+    
+    address[] games;
+    mapping(address => uint) playerWins;
+    mapping(address => uint) playerLosses;
+    
+    uint gameRequestCount;
+    
+    event gameRequestEvent(address gameAddress, address requester, uint value);
+    event gameEndEvent(address gameAddress, address player1, address player2, uint8[5] player1Moves, uint8[5] player2Moves);
+    
+    function placeGameRequest(uint8 move0, uint8 move1, uint8 move2, uint8 move3, uint8 move4 ) public payable returns(address){
+        require(msg.value >= minBidValue);
+        require(isValidMove(move0));
+        require(isValidMove(move1));
+        require(isValidMove(move2));
+        require(isValidMove(move3));
+        require(isValidMove(move4));
+        
+        address newGameAddress = new Game(msg.sender,move0, move1, move2, move3, move4);
+        
+        games.push(newGameAddress);
+        
+        gameRequestEvent(newGameAddress, msg.sender, msg.value);
+        
+        return newGameAddress;
+    }
+    
+    function isValidMove(uint8 move) public pure returns(bool){ return (move <= 2);}
+    
+    function acceptGameRequest(address gameAddress,uint8 move0, uint8 move1, uint8 move2, uint8 move3, uint8 move4 ) public payable{
+        Game game = Game(gameAddress);
+        
+        game.evaluateGame(msg.sender,move0,move1,move2, move3, move4);
+        
+        uint8[5] memory player1Moves = game.getPlayer1Moves();
+        uint8[5] memory player2Moves = game.getPlayer2Moves();
+        address gameCreator = game.getPlayer1();
+        
+        gameEndEvent(gameAddress,gameCreator,msg.sender, player1Moves, player2Moves);
+    }
+    
+    function areValidMoves(uint8[5] moves) public pure returns(bool){
+        for(uint i=0; i<5;i++){
+            if(moves[i] > 2){
+                return false;
+            }
+        }
+        return true;
+    }
+}

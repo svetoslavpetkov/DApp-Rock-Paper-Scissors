@@ -23,9 +23,9 @@ var web3instance = new Web3();
 export default {
   name: 'HelloWorld',
   data () {
-        document.aaa = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/AH6vEglIKyYCdZcnF3jE'));
-        console.log(document.aaa);        
-        console.log(document.aaa.eth.accounts);
+  /*https://ropsten.infura.io/AH6vEglIKyYCdZcnF3jE*/
+        /*document.aaa = new Web3(new Web3.providers.HttpProvider(''));*/
+        console.log(web3);
         return {
           msg: Wallet.getMessage(),
           addresses : [],

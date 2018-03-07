@@ -16,6 +16,9 @@
                   <li class="nav-item" :class="{ active: isActive('account') }">
                       <router-link class="nav-link" href="#" to="/Account">Account</router-link>
                   </li>
+                  <li>
+                      {{currentAccount}}
+                  </li>
               </ul>
           </div>
       </nav>
@@ -32,7 +35,22 @@ export default {
     methods: {
     isActive (name) {
       return name === this.$route.name
-    }
+    },
+    data(){ 
+        return {
+            currentAccount: ''    
+        }  
+    },
+    created(){             
+        var self = this;
+        self.currentAccount = web3.eth.defaultAccount ;
+        intervaID =setInterval(function() {                                 
+            if (web3.eth.defaultAccount !== self.currentAccount) {
+              self.currentAccount = web3.eth.defaultAccount;       
+              console.log('changed');                     
+            }
+          }, 1000);
+  },
   }
 }
 </script>
