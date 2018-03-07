@@ -11,13 +11,13 @@
                       <router-link class="nav-link" href="#" to="/">Home</router-link>
                   </li>
                   <li class="nav-item" :class="{ active: isActive('about') }">
-                      <router-link class="nav-link" href="#" to="/About">About</router-link>
+                      <router-link class="nav-link" href="#" to="/About">Leaderboard</router-link>
                   </li>
                   <li class="nav-item" :class="{ active: isActive('account') }">
-                      <router-link class="nav-link" href="#" to="/Account">Account</router-link>
+                      <router-link class="nav-link" href="#" to="/Account">MyGames</router-link>
                   </li>
-                  <li>
-                      {{currentAccount}}
+                  <li class="nav-item">
+                      <router-link class="nav-link" href="#" to="/Account">{{currentAccount}}</router-link>                      
                   </li>
               </ul>
           </div>
@@ -35,6 +35,7 @@ export default {
     methods: {
     isActive (name) {
       return name === this.$route.name
+    }
     },
     data(){ 
         return {
@@ -44,15 +45,14 @@ export default {
     created(){             
         var self = this;
         self.currentAccount = web3.eth.defaultAccount ;
-        intervaID =setInterval(function() {                                 
+        setInterval(function() {                                 
             if (web3.eth.defaultAccount !== self.currentAccount) {
               self.currentAccount = web3.eth.defaultAccount;       
               console.log('changed');                     
             }
           }, 1000);
-  },
+    }
   }
-}
 </script>
 
 <style>
