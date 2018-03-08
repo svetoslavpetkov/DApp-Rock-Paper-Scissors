@@ -57,3 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
+/WebApi/WebApi/bin
+/WebApi/WebApi/obj
+/WebApi/.vs
+/.vs

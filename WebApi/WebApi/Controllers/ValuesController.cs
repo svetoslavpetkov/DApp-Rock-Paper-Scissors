@@ -11,6 +11,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Newtonsoft.Json;
+using WebApi.Models.Contract;
 
 namespace WebApi.Controllers
 {
@@ -20,22 +21,11 @@ namespace WebApi.Controllers
         private readonly HexBigInteger _defaultGas = new HexBigInteger(3000000);
         private readonly HexBigInteger _zero = new HexBigInteger(0);
 
-        public class ContractMetaInfo
-        {
-            public object Abi { get; set; }
-            public string ByteCode { get; set; }
-
-            public string GetAbi()
-            {
-                return this.Abi.ToString();
-            }
-        }
-
-        private static string contractAddress = "0x92fd05360bd54ec9b1773d28395ee547245e3290";
+        private static string contractAddress = "";
 
         private ContractMetaInfo GetContractInfo()
         {
-            var json = System.IO.File.ReadAllText("C:\\Users\\volland\\source\\repos\\DApp-Rock-Paper-Scissors\\WebApi\\WebApi\\Contracts\\Simple.json");
+            var json = System.IO.File.ReadAllText("C:\\Users\\volland\\source\\repos\\DApp-Rock-Paper-Scissors\\Contracts\\build\\contracts\\GameBoard.json");
             return JsonConvert.DeserializeObject<ContractMetaInfo>(json);
         }
 
@@ -51,8 +41,8 @@ namespace WebApi.Controllers
         public ValuesController()
         {
             /**/
-            _account = new Account("8bf588cfcd9daa57ada648e1a97cd421b3883951523d3a23756bcc32c50d7e5f");
-            _web3 = new Web3(_account, "http://localhost:8545");
+            _account = new Account("c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3");
+            _web3 = new Web3(_account, "http://localhost:9545");
 
             if (contractAddress == string.Empty)
             {
@@ -86,7 +76,7 @@ namespace WebApi.Controllers
         {
             var contract = GetContract(contractAddress);
             var incrementers = contract.GetEvent("incrementers");
-            var all = incrementers.CreateFilterAsync().GetAwaiter().GetResult();
+            var all = incrementers.CreateFilterAsync(new Nethereum.RPC.Eth.DTOs.BlockParameter(new HexBigInteger(0))).GetAwaiter().GetResult();
 
             var allResult = incrementers.GetFilterChanges<EventObject>(all).GetAwaiter().GetResult();
             var allRaw = incrementers.GetAllChanges<EventObject>(all).GetAwaiter().GetResult();
@@ -101,15 +91,34 @@ namespace WebApi.Controllers
             increment.SendTransactionAsync(_account.Address, _defaultGas, _zero, 10).GetAwaiter().GetResult();
         }
 
+        [HttpGet("get-event")]
+        public void GetEvent(int id)
+        {
+            var contract = GetContract(contractAddress);
+            var increment = contract.GetFunction("getEvent");
+            var data = increment.CallDeserializingToObjectAsync<DataObject>(0).GetAwaiter().GetResult();
+        }
 
+        [FunctionOutput]
         private class EventObject
         {
-            [Parameter("address", "incrementer", 1, true)]
+            [Parameter("address", "incrementer", 1)]
             public string Sender { get; set; }
 
 
-            [Parameter("int", "value", 2, true)]
-            public int Value { get; set; }
+            [Parameter("uint256", "value", 2)]
+            public BigInteger Value { get; set; }
+        }
+
+        [FunctionOutput]
+        private class DataObject
+        {
+            [Parameter("address", "incrementer", 1)]
+            public string Sender { get; set; }
+
+
+            [Parameter("uint256", "value", 2)]
+            public BigInteger Value { get; set; }
         }
     }
 }

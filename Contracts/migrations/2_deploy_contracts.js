@@ -1,5 +1,5 @@
-var Simple = artifacts.require("./Simple.sol");
+var GameBoard = artifacts.require("./GameBoard.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(Simple);
+  deployer.deploy(GameBoard);
 };
