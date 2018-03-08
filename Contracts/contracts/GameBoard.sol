@@ -53,7 +53,7 @@ contract GameBoard {
     }
     
     function getCompletedGamesCount() public view returns(uint){
-        return completedGamesLog.length;   
+        return completedGamesLog.length;
     }
     
     function getCompletedGameLog(uint index) public view 
@@ -115,25 +115,14 @@ contract GameBoard {
         gameCompletedData.player2Moves[1] = move1;
         gameCompletedData.player2Moves[2] = move2;
         
-        uint8 player1Score;
-        uint8 player2Score;
-        
-        for(uint i=0; i<3;i++){
-            uint8 roundWin = getWiningMove(gameCompletedData.player1Moves[i], gameCompletedData.player2Moves[i]);
-            if(roundWin == 1){
-                player1Score++;
-            }
-            if(roundWin == 2){
-                player2Score++;
-            }
-        }
+		var winner = calculateWinner(gameCompletedData.player1Moves, gameCompletedData.player2Moves);
 
-        if(player1Score == player2Score){
+        if(winner == 0){
             gameCompletedData.winner = 0;
 			gameCompletedData.player1.transfer(90 finney);
 			gameCompletedData.player2.transfer(90 finney);
 		}
-        if(player1Score > player2Score){
+        else if(winner == 1){
             gameCompletedData.winner = 1;
 			gameCompletedData.player1.transfer(190 finney);
 		}
@@ -161,6 +150,45 @@ contract GameBoard {
         }
         return true;
     }
+	
+	function calculateWinnerWithSixParams(uint8 p1m0, uint8 p1m1, uint8 p1m2, uint8 p2m0, uint8 p2m1, uint8 p2m2) public pure returns(uint8){
+		uint8[3] memory player1Moves;
+		player1Moves[0] = p1m0;
+		player1Moves[1] = p1m1;
+		player1Moves[2] = p1m2;
+		
+		uint8[3] memory player2Moves;
+		player2Moves[0] = p2m0;
+		player2Moves[1] = p2m1;
+		player2Moves[2] = p2m2;
+		
+		return calculateWinner(player1Moves, player2Moves);
+	}
+	
+	function calculateWinner(uint8[3] player1Moves,uint8[3] player2Moves) public pure returns(uint8){
+		uint8 player1Score;
+        uint8 player2Score;
+        
+        for(uint i=0; i<3;i++){
+            uint8 roundWin = getWiningMove(player1Moves[i], player2Moves[i]);
+            if(roundWin == 1){
+                player1Score++;
+            }
+            if(roundWin == 2){
+                player2Score++;
+            }
+        }
+		
+		 if(player1Score == player2Score){
+            return 0;
+		}
+        else if(player1Score > player2Score){
+            return 1;
+		}
+        else{
+            return 2;
+		}
+	}
     
     function getWiningMove(uint8 player1Move, uint8 player2Move) public pure returns(uint8){
         if(player1Move == player2Move)
