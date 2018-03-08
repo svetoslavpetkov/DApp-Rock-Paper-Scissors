@@ -130,6 +130,13 @@ namespace WebApi.Services
             return result;
         }
 
+        public CompletedGameData GetCompletedByGameID(long gameID)
+        {
+            var getCreatedGameData = GetContract().GetFunction("getCompletedGameData");
+            var result = getCreatedGameData.CallDeserializingToObjectAsync<CompletedGameData>(gameID).GetAwaiter().GetResult();
+            return result;
+        }
+
         public long GetCompletedGamesCount()
         {
             var getCreatedGamesCount = GetContract().GetFunction("getCompletedGamesCount");

@@ -33,7 +33,7 @@ namespace WebApi.Models.Dto
                 GameID = completedGameData.GameID,
                 Player1 = completedGameData.Player1,
                 Player2 = completedGameData.Player2,
-                Status = GameStatus.Started,
+                Status = GameStatus.Completed,
                 Value = (long)Nethereum.Util.UnitConversion.Convert.ToWei(0.1)
             };
         }

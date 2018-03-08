@@ -26,9 +26,20 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        public void GetOpen()
+        [HttpGet("open")]
+        public IActionResult GetOpen()
         {
+            var result = contactService
+                .GetAllGames()
+                .Where(x=> x.Status == Models.Dto.GameStatus.Started)
+                .OrderBy(x=> x.GameID);
+            return Ok(result);
+        }
 
+        [HttpGet("{gameID:int}")]
+        public IActionResult GetByGameId(int gameID)
+        {
+            return Ok(contactService.GetCompletedByGameID(gameID));
         }
     }
 }

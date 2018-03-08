@@ -44,7 +44,7 @@ contract GameBoard {
     function getCompletedGameData(uint gameID) public view 
         returns(address player1, uint8 player1Move0, uint8 player1Move1, uint8 player1Move2, 
                 address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner, uint returnGameID){
-        require(completedGames[gameID].gameID != 0x0);
+        require(completedGames[gameID].player1 != 0x0);
         
         GameCompletedData memory gameData = completedGames[gameID];
         return ( player1 = gameData.player1,  player1Move0 = gameData.player1Moves[0],  player1Move1 = gameData.player1Moves[1],  player1Move2 = gameData.player1Moves[2], 
