@@ -1,11 +1,38 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <router-link :to="{ name: 'new-wallet'}">NewWallet</router-link>
-    <button v-on:click="createVault" >Create wallet</button>
-
-    <h1>Address</h1>
-  </div>
+  <article>
+        <div>
+            <button class="btn" v-on:click="increment">increment</button>
+            <button class="btn" v-on:click="getValue">getValue</button>
+            <button class="btn" v-on:click="readEvents">readEvents</button>            
+            <h1>Pending games</h1>        
+            <div class="card mt-3 mb-3" v-for="game in games" v-bind:key="game.address">
+                <div class="card-header">
+                    {{ game.address }}
+                </div>
+                <div class="card-body row">
+                <p class="col-6">Owner: {{game.player1}} </p>
+                <p class="col-4">Value: {{ game.value }} eth</p>
+                <p class="col-2">{{ game.createdDate }}</p>
+                </div>
+                <div class="card-footer">
+                  <button class="btn">Play</button>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6" v-for="game in games" v-bind:key="game.address">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ game.address }}</h5>
+                    <p class="card-text">Owner: {{game.player1}}</p>
+                    <p class="card-text">Value: {{ game.value }} eth</p>
+                    <p class="card-text">{{ game.createdDate }}</p>                  
+                    <button class="btn btn-primary">Play</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+  </article>
 </template>
 
 <script>
@@ -20,68 +47,131 @@ console.log(Web3.providers);
 console.log(Web3.providers.HttpProvider);
 var web3instance = new Web3();
 
+var  abi = [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "value",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "incrementer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "incrementers",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "uint256"
+        }
+      ],
+      "name": "increment",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getValue",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+
+var address = '0xd63cccacaeda7d376d2b1fa70a46c57fd0be6de1';
+
+var SimpleContract = web3.eth.contract(abi);
+var simpleContract = SimpleContract.at(address);
+
+// Or pass a callback to start watching immediately
+var event = simpleContract.incrementers(function(error, result) {
+    if (!error){
+        console.log('event arrived');
+        console.log(result);
+    }
+    else
+        console.log(error);
+});
+
 export default {
   name: 'HelloWorld',
   data () {
-  /*https://ropsten.infura.io/AH6vEglIKyYCdZcnF3jE*/
-        /*document.aaa = new Web3(new Web3.providers.HttpProvider(''));*/
-        console.log(web3);
         return {
-          msg: Wallet.getMessage(),
-          addresses : [],
-          keyStore : {}          
+           games : [{
+             address: 'sadaslkjfndjfnsdkjfnsjfnsdjfnsdj',
+             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
+             value: '0.001',
+             createdDate: '2001.01.01'
+           },{
+             address: 'sadaslkjfndjfnsdkjfnsjfnsdjfnsdj',
+             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
+             value: '0.001',
+             createdDate: '2001.01.01'
+           },{
+             address: 'sadaslkjfndjfnsdkjfnsjfnsdjfnsdj',
+             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
+             value: '0.001',
+             createdDate: '2001.01.01'
+           }
+           ]       
         }
       },
       methods : {      
-        createVault : function(){
-          var password = prompt('Enter password for encryption', 'password');
-
-          Wallet.create(password,'seed',function(msg){ alert(msg);});
-
-/*
-          var lightwallet = EthLightwallet;
-          
-          var randomSeed = EthLightwallet.keystore.generateRandomSeed('home thick');
-
-          EthLightwallet.keystore.createVault({
-            password: password,
-            seedPhrase: randomSeed, // Optionally provide a 12-word seed phrase
-            // salt: fixture.salt,     // Optionally provide a salt.
-                                      // A unique salt will be generated otherwise.
-             hdPathString: "m/44'/60'/0'/0"    // Optional custom HD Path String
-          }, function (err, ks) {
-            
-
-            console.log(err);
-            console.log(ks);
-            // Some methods will require providing the `pwDerivedKey`,
-            // Allowing you to only decrypt private keys on an as-needed basis.
-            // You can generate that value with this convenient method:
-            ks.keyFromPassword(password, function (err, pwDerivedKey) {
-              if (err) throw err;
-
-              // generate five new address/private key pairs
-              // the corresponding private keys are also encrypted
-              ks.generateNewAddress(pwDerivedKey, 5);
-              var addr = ks.getAddresses();
-
-              console.log(addr);              
-              console.log(ks);
-              
-              //this.addresses = addr;
-
-              ks.passwordProvider = function (callback) {
-                var pw = prompt("Please enter password", "Password");
-                callback(null, pw);
-              };
-
-              console.log(ks.serialize());
-              // Now set ks as transaction_signer in the hooked web3 provider
-              // and you can start using web3 using the keys/addresses in ks!
+        increment(){
+            simpleContract.increment(10,function(a,b){
+              console.log('incremetn callback');              
+              console.log(a);
+              console.log(b);              
             });
-          });*/
+        },
+        getValue(){
+            simpleContract.getValue(function(a,b){
+               console.log('getValue callback');              
+              console.log(a);
+              console.log(b);  
+            });
+        },
+        readEvents(){
+
         }
-    }
+      }
 }
 </script>
 

@@ -19,6 +19,7 @@
     "ethjs-provider-signer": "^0.1.4",
     "jquery": "^3.3.1",
     "store": "^2.0.12",
+    "toastr": "^2.1.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

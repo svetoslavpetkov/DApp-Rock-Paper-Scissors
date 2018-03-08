@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import NewWallet from '@/components/NewWallet'
+import NewGame from '@/components/NewGame'
+
 
 Vue.use(Router)
 
@@ -13,9 +15,9 @@ export default new Router({
       component: HelloWorld
     },
     {
-      path: '/new-wallet',
-      name: 'new-wallet',
-      component: NewWallet
+      path: '/new-game',
+      name: 'new-game',
+      component: NewGame
     }
   ]
 })

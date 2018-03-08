@@ -16,6 +16,9 @@
                   <li class="nav-item" :class="{ active: isActive('account') }">
                       <router-link class="nav-link" href="#" to="/Account">MyGames</router-link>
                   </li>
+                  <li class="nav-item" :class="{ active: isActive('account') }">
+                      <router-link class="nav-link" href="#" to="/new-game">NewGame</router-link>
+                  </li>
                   <li class="nav-item">
                       <router-link class="nav-link" href="#" to="/Account">{{currentAccount}}</router-link>                      
                   </li>
