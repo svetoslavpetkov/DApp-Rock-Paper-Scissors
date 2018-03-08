@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApi.Models.Config;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -32,6 +34,15 @@ namespace WebApi
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     );
+            });
+
+            ContractConfig config = new ContractConfig();
+            Configuration.GetSection("ContractConfig").Bind(config);
+
+            services.AddSingleton<ContractService>(s =>
+            {
+                ContractService contract = new ContractService(config);
+                return contract;
             });
         }
 

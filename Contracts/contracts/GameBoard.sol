@@ -43,13 +43,13 @@ contract GameBoard {
     
     function getCompletedGameData(uint gameID) public view 
         returns(address player1, uint8 player1Move0, uint8 player1Move1, uint8 player1Move2, 
-                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner){
+                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner, uint returnGameID){
         require(completedGames[gameID].gameID != 0x0);
         
         GameCompletedData memory gameData = completedGames[gameID];
         return ( player1 = gameData.player1,  player1Move0 = gameData.player1Moves[0],  player1Move1 = gameData.player1Moves[1],  player1Move2 = gameData.player1Moves[2], 
                  player2 = gameData.player2,  player2Move0 = gameData.player2Moves[0],  player2Move1 = gameData.player2Moves[1],  player2Move2 = gameData.player2Moves[2],  
-                 winner = gameData.winner);
+                 winner = gameData.winner, returnGameID = gameData.gameID);
     }
     
     function getCompletedGamesCount() public view returns(uint){
@@ -58,13 +58,13 @@ contract GameBoard {
     
     function getCompletedGameLog(uint index) public view 
         returns(address player1, uint8 player1Move0, uint8 player1Move1, uint8 player1Move2, 
-                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner){
+                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner, uint returnGameID){
         require(completedGamesLog.length > index);
         
         GameCompletedData memory gameData = completedGamesLog[index];
         return ( player1 = gameData.player1,  player1Move0 = gameData.player1Moves[0],  player1Move1 = gameData.player1Moves[1],  player1Move2 = gameData.player1Moves[2], 
                  player2 = gameData.player2,  player2Move0 = gameData.player2Moves[0],  player2Move1 = gameData.player2Moves[1],  player2Move2 = gameData.player2Moves[2],  
-                 winner = gameData.winner);
+                 winner = gameData.winner, returnGameID = gameData.gameID);
     }
     
     function placeGameRequest(uint8 move0, uint8 move1, uint8 move2) public payable returns(uint){

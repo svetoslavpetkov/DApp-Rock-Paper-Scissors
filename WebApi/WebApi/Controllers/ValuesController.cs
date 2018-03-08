@@ -12,6 +12,7 @@ using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Newtonsoft.Json;
 using WebApi.Models.Contract;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
@@ -40,25 +41,27 @@ namespace WebApi.Controllers
 
         public ValuesController()
         {
-            /**/
-            _account = new Account("c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3");
-            _web3 = new Web3(_account, "http://localhost:9545");
+            //ContractService service = new ContractService();
+            //service.Deploy("c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3", "http://localhost:9545");
+            ///**/
+            //_account = new Account("c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3");
+            //_web3 = new Web3(_account, "http://localhost:9545");
 
-            if (contractAddress == string.Empty)
-            {
-                var contract = GetContractInfo();
-                var senderAddress = _account.Address;
-                var transactionHash = this._web3.Eth.DeployContract.SendRequestAsync(contract.GetAbi(), contract.ByteCode, senderAddress, _defaultGas, new object[] { }).GetAwaiter().GetResult();
+            //if (contractAddress == string.Empty)
+            //{
+            //    var contract = GetContractInfo();
+            //    var senderAddress = _account.Address;
+            //    var transactionHash = this._web3.Eth.DeployContract.SendRequestAsync(contract.GetAbi(), contract.ByteCode, senderAddress, _defaultGas, new object[] { }).GetAwaiter().GetResult();
 
-                var receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
-                while (receipt == null)
-                {
-                    Thread.Sleep(1000);
-                    receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
-                }
+            //    var receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
+            //    while (receipt == null)
+            //    {
+            //        Thread.Sleep(1000);
+            //        receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
+            //    }
 
-                contractAddress = receipt.ContractAddress;
-            }
+            //    contractAddress = receipt.ContractAddress;
+            //}
         }
 
         // GET api/values

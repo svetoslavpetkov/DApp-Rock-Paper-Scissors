@@ -11,5 +11,10 @@ namespace WebApi.Models.Contract
     {
         [Parameter("address", "incrementer", 1)]
         public string Player1 { get; set; }
+
+        [Parameter("uint256", "incrementer", 2)]
+        public long Value { get; set; }
+
+        public long GameID { get; set; }
     }
 }
