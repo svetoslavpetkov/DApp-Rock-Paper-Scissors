@@ -41,5 +41,11 @@ namespace WebApi.Controllers
         {
             return Ok(contactService.GetCompletedByGameID(gameID));
         }
+
+        [HttpGet("created/{gameID:int}")]
+        public IActionResult GetCreatedGameByID(int gameID)
+        {
+            return Ok(contactService.GetCreatedGame(gameID));
+        }
     }
 }

@@ -18,6 +18,7 @@ contract GameBoard {
         uint gameID;
         address player1;
         uint8[3] player1Moves;
+        uint createdDate;
     }
     
     struct GameCompletedData{
@@ -30,26 +31,48 @@ contract GameBoard {
         uint8[3] player2Moves;
         
         uint8 winner;
+        
+        uint createdDate;
+        uint completedDate;
+    }
+    
+    modifier isOwner{
+        require(msg.sender == owner);
+        _;
     }
     
     GameCreatedData[] private createdGamesLog;
     GameCompletedData[] private completedGamesLog;
 	mapping(uint => GameCompletedData) private completedGames;
     address owner;
+    uint private collectedFees;
+    
+    function getCollectedFees() public view isOwner returns(uint){
+        return(collectedFees);
+    }
+    
+    function withdraw(uint value) public isOwner{
+        require(collectedFees >= value);
+        owner.transfer(collectedFees);
+        collectedFees -= value;
+    }
     
     function GameBoard() public{
         owner = msg.sender;
+        collectedFees = 0;
     }
     
     function getCompletedGameData(uint gameID) public view 
         returns(address player1, uint8 player1Move0, uint8 player1Move1, uint8 player1Move2, 
-                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner, uint returnGameID){
-        require(completedGames[gameID].player1 != 0x0);
+                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  
+                uint8 winner, uint returnGameID,uint createdDate, uint completedDate){
+            GameCompletedData memory gameData = completedGames[gameID];
+            require(gameData.player1 != 0x0);
         
-        GameCompletedData memory gameData = completedGames[gameID];
+        
         return ( player1 = gameData.player1,  player1Move0 = gameData.player1Moves[0],  player1Move1 = gameData.player1Moves[1],  player1Move2 = gameData.player1Moves[2], 
                  player2 = gameData.player2,  player2Move0 = gameData.player2Moves[0],  player2Move1 = gameData.player2Moves[1],  player2Move2 = gameData.player2Moves[2],  
-                 winner = gameData.winner, returnGameID = gameData.gameID);
+                 winner = gameData.winner, returnGameID = gameData.gameID, createdDate = gameData.createdDate, completedDate = gameData.completedDate);
     }
     
     function getCompletedGamesCount() public view returns(uint){
@@ -58,13 +81,14 @@ contract GameBoard {
     
     function getCompletedGameLog(uint index) public view 
         returns(address player1, uint8 player1Move0, uint8 player1Move1, uint8 player1Move2, 
-                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  uint8 winner, uint returnGameID){
+                address player2, uint8 player2Move0, uint8 player2Move1, uint8 player2Move2,  
+                uint8 winner, uint returnGameID,uint createdDate, uint completedDate){
         require(completedGamesLog.length > index);
         
         GameCompletedData memory gameData = completedGamesLog[index];
         return ( player1 = gameData.player1,  player1Move0 = gameData.player1Moves[0],  player1Move1 = gameData.player1Moves[1],  player1Move2 = gameData.player1Moves[2], 
                  player2 = gameData.player2,  player2Move0 = gameData.player2Moves[0],  player2Move1 = gameData.player2Moves[1],  player2Move2 = gameData.player2Moves[2],  
-                 winner = gameData.winner, returnGameID = gameData.gameID);
+                 winner = gameData.winner, returnGameID = gameData.gameID, createdDate = gameData.createdDate, completedDate = gameData.completedDate);
     }
     
     function placeGameRequest(uint8 move0, uint8 move1, uint8 move2) public payable returns(uint){
@@ -79,6 +103,7 @@ contract GameBoard {
         gameData.player1Moves[0] = move0;
         gameData.player1Moves[1] = move1;
         gameData.player1Moves[2] = move2;
+        gameData.createdDate = now;
         
         createdGamesLog.push(gameData);
         
@@ -89,10 +114,10 @@ contract GameBoard {
         return createdGamesLog.length;
     }
     
-    function getCreatedGameData(uint index) public view returns(address,uint){
+    function getCreatedGameData(uint index) public view returns(address,uint,uint){
         require(createdGamesLog.length > index);
         
-        return (createdGamesLog[index].player1, bidValue);
+        return (createdGamesLog[index].player1, bidValue,createdGamesLog[index].createdDate );
     }
     
     function isValidMove(uint8 move) public pure returns(bool){ return (move <= 2);}
@@ -114,21 +139,26 @@ contract GameBoard {
         gameCompletedData.player2Moves[0] = move0;
         gameCompletedData.player2Moves[1] = move1;
         gameCompletedData.player2Moves[2] = move2;
+        gameCompletedData.createdDate = createGame.createdDate;
+        gameCompletedData.completedDate = now;
         
-		var winner = calculateWinner(gameCompletedData.player1Moves, gameCompletedData.player2Moves);
+		uint winner = calculateWinner(gameCompletedData.player1Moves, gameCompletedData.player2Moves);
 
         if(winner == 0){
             gameCompletedData.winner = 0;
 			gameCompletedData.player1.transfer(90 finney);
 			gameCompletedData.player2.transfer(90 finney);
+			collectedFees += 20 finney;
 		}
         else if(winner == 1){
             gameCompletedData.winner = 1;
 			gameCompletedData.player1.transfer(190 finney);
+			collectedFees += 10 finney;
 		}
         else{
             gameCompletedData.winner = 2;
 			gameCompletedData.player2.transfer(190 finney);
+			collectedFees += 10 finney;
 		}
         
         completedGamesLog.push(gameCompletedData);

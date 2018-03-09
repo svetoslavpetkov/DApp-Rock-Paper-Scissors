@@ -23,6 +23,16 @@ namespace WebApi.Services
 
         private static Web3 _web3;
         private static Account _account;
+
+        internal ContractMetadata GetMetadata()
+        {
+            return new ContractMetadata()
+            {
+                Abi = JsonConvert.SerializeObject(_contractInfo.Abi),
+                Address = contractAddress
+            };
+        }
+
         private static ContractMetaInfo _contractInfo;
 
         public string ContractAddress { get; private set; }

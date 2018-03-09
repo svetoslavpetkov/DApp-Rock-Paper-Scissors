@@ -43,5 +43,11 @@ namespace WebApi.Models.Contract
 
         [Parameter("uint256", "returnGameID", 10)]
         public long GameID { get; set; }
+
+        [Parameter("uint256", "createdDate", 11)]
+        public long CreatedDate { get; set; }
+
+        [Parameter("uint256", "completedDate", 12)]
+        public long CompletedDate { get; set; }
     }
 }

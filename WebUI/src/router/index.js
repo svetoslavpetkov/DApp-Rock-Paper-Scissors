@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import NewWallet from '@/components/NewWallet'
 import NewGame from '@/components/NewGame'
+import PlayGame from '@/components/PlayGame'
 
 
 Vue.use(Router)
@@ -18,6 +19,11 @@ export default new Router({
       path: '/new-game',
       name: 'new-game',
       component: NewGame
+    },
+    {
+      path: '/play-game/:gameid',
+      name: 'play-game',
+      component: PlayGame
     }
   ]
 })

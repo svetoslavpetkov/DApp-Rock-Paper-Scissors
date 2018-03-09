@@ -1,6 +1,10 @@
 <template>
   <div>
-    <h1>Create new game</h1>
+    <h1>Play game {{$route.params.gameid}}</h1>
+    <h3>Other player: {{game.player1}}</h3>    
+    <div v-if="curentUserAccount == game.player1" class="alert alert-danger" role="alert">
+      <h3>You are going to play against game created by yourself</h3>
+    </div>
     <hr />
     <div class="row moveRow" v-for="move in moves" v-bind:key="move.id">
       <div class="col-md-3">
@@ -23,7 +27,7 @@
     <div  v-if="isLoading">
         Creating contract
     </div>
-    <button v-if="!isLoading" class="btn btn-lg btn-primary" v-on:click="createGame" >CreateGame</button>
+    <button v-if="!isLoading" class="btn btn-lg btn-primary" v-on:click="createGame" >Play the game</button>
     <div v-if="gameCreated" class="alert alert-success" role="alert">
       Game created!
     </div>
@@ -41,7 +45,7 @@ import apiService from '../services/apiService'
 
 
 export default {
-  name: 'NewGame',
+  name: 'PlayGame',
   data () {
         return {
             value: '0.1',
@@ -61,7 +65,9 @@ export default {
             hasError: false,
             errorText: '',
             isLoading: false,
-            isActive: false
+            isActive: false,
+            game: {},
+            curentUserAccount: ''
         }
       },
       methods : {
@@ -71,7 +77,7 @@ export default {
             self.isLoading = true;
             this.hasError = false;
             self.gameCreated = false;             
-            this.contractInstance.placeGameRequest(this.moves[0].selecetedMove,this.moves[1].selecetedMove,this.moves[2].selecetedMove
+            this.contractInstance.acceptGameRequest(this.$route.params.gameid,this.moves[0].selecetedMove,this.moves[1].selecetedMove,this.moves[2].selecetedMove
               ,{from: web3.eth.accounts[0], gas: 3000000, value: web3.toWei(100, 'finney')},function(error,result){
                 console.log(error);
                 if(error){
@@ -85,8 +91,12 @@ export default {
                 self.isLoading = false;
             });
         },
-        switchActive(){
-          this.isActive = !this.isActive;
+        initGameData(){
+            apiService.get(this.$http, 'game', 'created/'+ this.$route.params.gameid).then(result => {
+               this.game = result.body;
+            }, error => {
+              console.log(error)
+            });
         }
     },
       created () {
@@ -97,7 +107,9 @@ export default {
           self.contractInstance = contract.at(contractMetadata.address);
         }, error => {
           console.log(error)
-        });           
+        });     
+        this.initGameData();  
+        this.curentUserAccount =  web3.eth.accounts[0];
     }
 }
 </script>

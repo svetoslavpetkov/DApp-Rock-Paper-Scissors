@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Models.Contract;
+using WebApi.Util;
 
 namespace WebApi.Models.Dto
 {
@@ -16,13 +17,18 @@ namespace WebApi.Models.Dto
 
         public long Value { get; set; }
 
+        public string CreatedDate { get; set; }
+
+        public string CompletedDate { get; set; } = "";
+
         public static GameInfo FromGameInitated(GameInitiated gameInitiated )
         {
             return new GameInfo() {
                 GameID = gameInitiated.GameID,
                 Player1 = gameInitiated.Player1,
                 Status = GameStatus.Started,
-                Value = (long)Nethereum.Util.UnitConversion.Convert.ToWei(0.1)
+                Value = (long)Nethereum.Util.UnitConversion.Convert.ToWei(0.1),
+                CreatedDate = ConvertUtil.GetDateString(gameInitiated.CreatedDate)
             };
         }
 
@@ -34,7 +40,9 @@ namespace WebApi.Models.Dto
                 Player1 = completedGameData.Player1,
                 Player2 = completedGameData.Player2,
                 Status = GameStatus.Completed,
-                Value = (long)Nethereum.Util.UnitConversion.Convert.ToWei(0.1)
+                Value = (long)Nethereum.Util.UnitConversion.Convert.ToWei(0.1),
+                CreatedDate = ConvertUtil.GetDateString(completedGameData.CreatedDate),
+                CompletedDate = ConvertUtil.GetDateString(completedGameData.CompletedDate)
             };
         }
     }

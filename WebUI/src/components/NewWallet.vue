@@ -50,6 +50,7 @@
 </template>
 <script>
 import Wallet from '../../static/js/wallet'
+import apiService from '../services/apiService'
 
 export default {
     name: 'NewWallet',

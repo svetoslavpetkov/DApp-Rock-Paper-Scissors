@@ -1,7 +1,10 @@
 <template>
-  <div id="app">
+  <div id="app">      
     <div class="container-fluid">
-      <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light justify-content-between">
+      <div>
+            <img src="./assets/RPS.png" class="logo">
+      </div>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
           </button>
@@ -10,14 +13,14 @@
                   <li class="nav-item" :class="{ active: isActive('home') }">
                       <router-link class="nav-link" href="#" to="/">Home</router-link>
                   </li>
+                   <li class="nav-item" :class="{ active: isActive('new-game') }">
+                      <router-link class="nav-link" href="#" to="/new-game">NewGame</router-link>
+                  </li>
                   <li class="nav-item" :class="{ active: isActive('about') }">
                       <router-link class="nav-link" href="#" to="/About">Leaderboard</router-link>
                   </li>
                   <li class="nav-item" :class="{ active: isActive('account') }">
                       <router-link class="nav-link" href="#" to="/Account">MyGames</router-link>
-                  </li>
-                  <li class="nav-item" :class="{ active: isActive('account') }">
-                      <router-link class="nav-link" href="#" to="/new-game">NewGame</router-link>
                   </li>
                   <li class="nav-item">
                       <router-link class="nav-link" href="#" to="/Account">{{currentAccount}}</router-link>                      
@@ -65,6 +68,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

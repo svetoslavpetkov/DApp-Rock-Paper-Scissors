@@ -8,6 +8,7 @@ contract('GameBoard', function (accounts) {
 	const _player1 = accounts[2]; 
 	const _player2 = accounts[3]; 
 	
+	const oneFinney = 10 ** 15;
 	const oneEther = 10 ** 18;
 	const bidValue = 10 ** 17;
 	
@@ -100,8 +101,7 @@ contract('GameBoard', function (accounts) {
 		assert.strictEqual(winner.toNumber(), 1, "winner should be 1");
 		
 		winner = await instance.calculateWinnerWithSixParams(0,1,0,2,2,0);			
-		assert.strictEqual(winner.toNumber(), 0, "winner should be equal");
-				
+		assert.strictEqual(winner.toNumber(), 0, "winner should be equal");						
 	 });
 	 
 	 it("get game data", async function () { 		 
@@ -113,6 +113,9 @@ contract('GameBoard', function (accounts) {
 		 
 		 let completedLogCount = await instance.getCompletedGamesCount();
 		 assert.strictEqual(completedLogCount.toNumber(), 1, "winner should be player 2 ");
+		 
+		 let fees = await instance.getCollectedFees();
+		
 		 
 		 [player1, player1Move0, player1Move1,  player1Move2,  player2,  player2Move0,  player2Move1,  player2Move2, winner] =  await instance.getCompletedGameLog(0);
 		 
@@ -133,12 +136,23 @@ contract('GameBoard', function (accounts) {
 		 assert.strictEqual(collectedUntilNow.toNumber(), 4 * oneEther, " should be 4 ethers collected");
 		 assert.strictEqual(giversCount.toNumber(), 2, " should be 2 donators");*/
 	 });	 
-/*
-
-   enum GameMove{
-        Rock,
-        Paper,
-        Scissors
-    }
-*/
+	 
+	it("fees", async function () { 		 
+		 await instance.placeGameRequest(0,0,0, {from: _player1, value: bidValue});		
+		 await instance.placeGameRequest(0,0,0, {from: _player1, value: bidValue});		
+		 await instance.placeGameRequest(0,1,2, {from: _player1, value: bidValue});		
+		
+		 await instance.acceptGameRequest(2,2,0,1, {from: _player2, value: bidValue});		 
+		 
+		 let completedLogCount = await instance.getCompletedGamesCount();
+		 assert.strictEqual(completedLogCount.toNumber(), 1, "winner should be player 2 ");
+		 
+		 let fees = await instance.getCollectedFees();
+		 assert.strictEqual(fees.toNumber(), oneFinney*10, "fee should be 10 finney");
+		 
+		 await instance.acceptGameRequest(0,0,0,0, {from: _player2, value: bidValue});
+		 
+		 fees = await instance.getCollectedFees();
+		 assert.strictEqual(fees.toNumber(), oneFinney*30, "fee should be 30 finney");
+	 });
 }); 
