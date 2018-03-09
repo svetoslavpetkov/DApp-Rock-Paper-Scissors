@@ -27,14 +27,19 @@ contract('GameBoard', function (accounts) {
 
 	 it("place one game", async function () { 
 		  
-		 await instance.placeGameRequest(0, 0,0, {from: _player1, value: bidValue});		  
+		 await instance.placeGameRequest(0, 0,0, {from: _player1, value: bidValue});	
+
+		await instance.placeGameRequest(0, 0,0, {from: _player2, value: bidValue});		 
 		 
 		 let gamesCount = await instance.getCreatedGamesCount();
-		 assert.strictEqual(gamesCount.toNumber(), 1, "gamesCount should be 1");
+		 assert.strictEqual(gamesCount.toNumber(),2, "gamesCount should be 2");
 		
 		 [address, gameValue] = await instance.getCreatedGameData(0);
 		 assert.strictEqual(gameValue.toNumber(), bidValue, "bid value should be ");
 		 assert.strictEqual(address, _player1, "bid value should be ");		 
+		 
+		 [address, gameValue] = await instance.getCreatedGameData(1);
+		 assert.strictEqual(address, _player2, "bid value should be ");	
 	 });
 	 
 	 

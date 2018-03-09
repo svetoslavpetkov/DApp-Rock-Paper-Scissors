@@ -16,14 +16,14 @@
                    <li class="nav-item" :class="{ active: isActive('new-game') }">
                       <router-link class="nav-link" href="#" to="/new-game">NewGame</router-link>
                   </li>
-                  <li class="nav-item" :class="{ active: isActive('about') }">
-                      <router-link class="nav-link" href="#" to="/About">Leaderboard</router-link>
+                  <li class="nav-item" :class="{ active: isActive('top-scores') }">
+                      <router-link class="nav-link" href="#" to="/top-scores">Top scores</router-link>
                   </li>
                   <li class="nav-item" :class="{ active: isActive('account') }">
                       <router-link class="nav-link" href="#" to="/Account">MyGames</router-link>
                   </li>
-                  <li class="nav-item">
-                      <router-link class="nav-link" href="#" to="/Account">{{currentAccount}}</router-link>                      
+                  <li class="nav-item ellipsis">
+                      <router-link class="nav-link" href="#" :to="{ name: 'player', params: { playerAddress: currentAccount }}">{{currentAccount}}</router-link>                      
                   </li>
               </ul>
           </div>

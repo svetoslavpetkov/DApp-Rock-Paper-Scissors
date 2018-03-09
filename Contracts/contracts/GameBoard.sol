@@ -99,7 +99,7 @@ contract GameBoard {
         
         GameCreatedData memory gameData;
         gameData.gameID = createdGamesLog.length;
-        gameData.player1 = msg.sender;
+        gameData.player1 = tx.origin;
         gameData.player1Moves[0] = move0;
         gameData.player1Moves[1] = move1;
         gameData.player1Moves[2] = move2;
@@ -116,8 +116,7 @@ contract GameBoard {
     
     function getCreatedGameData(uint index) public view returns(address player1,uint value,uint createdDate){
         require(createdGamesLog.length > index);
-        GameCreatedData memory gameData = createdGamesLog[index];
-        return (player1 = gameData.player1, value = bidValue, createdDate =gameData.createdDate );
+        return (player1 = createdGamesLog[index].player1, value = bidValue, createdDate =createdGamesLog[index].createdDate );
     }
     
     function isValidMove(uint8 move) public pure returns(bool){ return (move <= 2);}
@@ -135,7 +134,7 @@ contract GameBoard {
         gameCompletedData.gameID = gameID;
         gameCompletedData.player1 =  createGame.player1;
         gameCompletedData.player1Moves = createGame.player1Moves;
-        gameCompletedData.player2 = msg.sender;
+        gameCompletedData.player2 = tx.origin;
         gameCompletedData.player2Moves[0] = move0;
         gameCompletedData.player2Moves[1] = move1;
         gameCompletedData.player2Moves[2] = move2;

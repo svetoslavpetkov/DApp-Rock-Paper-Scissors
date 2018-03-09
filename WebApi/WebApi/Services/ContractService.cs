@@ -48,23 +48,27 @@ namespace WebApi.Services
             _web3 = new Web3(_account, nodeUrl);
 
             _contractInfo = GetContractInfo();
-            var senderAddress = _account.Address;
-            var transactionHash = _web3.Eth.DeployContract.SendRequestAsync(_contractInfo.GetAbi(), _contractInfo.ByteCode, senderAddress, DefaultGas, new object[] { }).GetAwaiter().GetResult();
 
-            var receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
-            while (receipt == null)
+            if (contractAddress == string.Empty)
             {
-                Thread.Sleep(1000);
-                receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
+                var senderAddress = _account.Address;
+                var transactionHash = _web3.Eth.DeployContract.SendRequestAsync(_contractInfo.GetAbi(), _contractInfo.ByteCode, senderAddress, DefaultGas, new object[] { }).GetAwaiter().GetResult();
+
+                var receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
+                while (receipt == null)
+                {
+                    Thread.Sleep(1000);
+                    receipt = _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash).GetAwaiter().GetResult();
+                }
+
+                contractAddress = receipt.ContractAddress;
+                CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
+                CreateGame(GameMove.Paper, GameMove.Paper, GameMove.Paper);
+                CreateGame(GameMove.Scissors, GameMove.Scissors, GameMove.Scissors);
+
+                AcceptGame(0, GameMove.Paper, GameMove.Rock, GameMove.Rock);
+                var res = GetCompletedByIndex(0);
             }
-
-            contractAddress = receipt.ContractAddress;
-            CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
-            CreateGame(GameMove.Paper, GameMove.Paper, GameMove.Paper);
-            CreateGame(GameMove.Scissors, GameMove.Scissors, GameMove.Scissors);
-
-            AcceptGame(0, GameMove.Paper, GameMove.Rock, GameMove.Rock);
-            var res = GetCompletedByIndex(0);
         }
 
         private ContractMetaInfo GetContractInfo()
@@ -97,12 +101,7 @@ namespace WebApi.Services
                 createdGames.Add(GetCreatedGame(i));
             }
 
-            var completedCount = GetCompletedGamesCount();
-            List<CompletedGameData> completedGames = new List<CompletedGameData>();
-            for (long i = 0; i < completedCount; i++)
-            {
-                completedGames.Add(GetCompletedByIndex(i));
-            }
+            IList<CompletedGameData> completedGames = GetAllCompltedGames();
 
             List<GameInfo> result = new List<GameInfo>();
             //Staretd            
@@ -118,6 +117,17 @@ namespace WebApi.Services
             return result;
         }
 
+        public IList<CompletedGameData> GetAllCompltedGames()
+        {
+            var completedCount = GetCompletedGamesCount();
+            List<CompletedGameData> completedGames = new List<CompletedGameData>();
+            for (long i = 0; i < completedCount; i++)
+            {
+                completedGames.Add(GetCompletedByIndex(i));
+            }
+            return completedGames;
+        }
+
         public long GetCreatedGamesCount()
         {
             var getCreatedGamesCount = GetContract().GetFunction("getCreatedGamesCount");
@@ -128,7 +138,7 @@ namespace WebApi.Services
         public GameInitiated GetCreatedGame(long index)
         {
             var getCreatedGameData = GetContract().GetFunction("getCreatedGameData");
-            var result = getCreatedGameData.CallDeserializingToObjectAsync<GameInitiated>().GetAwaiter().GetResult();
+            var result = getCreatedGameData.CallDeserializingToObjectAsync<GameInitiated>(index).GetAwaiter().GetResult();
             result.GameID = index;
             return result;
         }
@@ -160,6 +170,32 @@ namespace WebApi.Services
             HexBigInteger valueInHex = new HexBigInteger(value);
             var placeGameRequest = GetContract().GetFunction("acceptGameRequest");
             var result = placeGameRequest.SendTransactionAsync(_account.Address, DefaultGas, valueInHex, gameID, (int)move1, (int)move2, (int)move3).GetAwaiter().GetResult();
+        }
+
+        public IList<Player> GetTopPlayers(int maxItems)
+        {
+            Dictionary<string, Player> allPlayers = new Dictionary<string, Player>();
+            var games = GetAllCompltedGames();
+
+            foreach (var game in games)
+            {
+                string winner = game.Winner == 1 ? game.Player1 : ( game.Winner == 2 ? game.Player2 : "");
+                string loser = game.Winner == 1 ? game.Player2 : (game.Winner == 2 ? game.Player1 : "");
+
+                if (!allPlayers.ContainsKey(winner))
+                {
+                    allPlayers.Add(winner, new Player() { Address = winner });
+                }
+                if (!allPlayers.ContainsKey(loser))
+                {
+                    allPlayers.Add(loser, new Player() { Address = loser });
+                }
+
+                allPlayers[winner].Wins++;
+                allPlayers[loser].Losses++;
+            }
+
+            return allPlayers.Values.OrderBy(p => p.WinsOverLosses).Take(maxItems).ToList();
         }
     }
 }

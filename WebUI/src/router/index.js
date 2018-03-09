@@ -4,6 +4,8 @@ import HelloWorld from '@/components/HelloWorld'
 import NewWallet from '@/components/NewWallet'
 import NewGame from '@/components/NewGame'
 import PlayGame from '@/components/PlayGame'
+import TopScores from '@/components/TopScores'
+import Player from '@/components/Player'
 
 
 Vue.use(Router)
@@ -24,6 +26,8 @@ export default new Router({
       path: '/play-game/:gameid',
       name: 'play-game',
       component: PlayGame
-    }
+    },
+    { path: '/top-scores', name: 'top-scores', component: TopScores },
+    { path: '/player/:playerAddress', name: 'player', component: Player }
   ]
 })

@@ -2,12 +2,16 @@
   <article>
         <div>        
             <h1>Pending games</h1>
+            <div v-if="isLoading" class="pageLoader"></div>            
             <div class="row">
               <div class="col-sm-6 game" v-for="game in games" v-bind:key="game.gameID">
                 <div class="card">
                   <div class="card-header">GameID: <strong>{{ game.gameID }}</strong></div>
                   <div class="card-body">
-                    <p class="card-text">Owner: {{game.player1}}</p>
+                    <p class="card-text">
+                      Owner: 
+                      <router-link class="nav-link" href="#" :to="{ name: 'player', params: { playerAddress: game.player1 }}">{{game.player1}}</router-link>   
+                    </p>
                     <p class="card-text">Value: {{ game.value | toEthers }} eth</p>
                     <p class="card-text">Create date: {{ game.createdDate }}</p>                                      
                   </div>
@@ -16,7 +20,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> 
         </div>
   </article>
 </template>
@@ -32,44 +36,17 @@ export default {
   name: 'HelloWorld',
   data () {
         return {
-            contractInstance : {}
-           ,games : [{
-             gameId: 0,
-             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
-             value: '0.001',
-             createdDate: '2001.01.01'
-           },{
-             gameId: 1,
-             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
-             value: '0.001',
-             createdDate: '2001.01.01'
-           },{
-             gameId: 2,
-             player1: 'asdjasnfkjsadnfjasdnfjsdfnsdajfdnasdkj,',
-             value: '0.001',
-             createdDate: '2001.01.01'
-           }
-           ]       
+            contractInstance : {},
+            games : [],
+           isLoading : true
         }
       },
   methods : {      
-        increment(){
-            simpleContract.increment(10,function(a,b){
-              console.log('incremetn callback');              
-              console.log(a);
-              console.log(b);              
-            });
-        },
-        getValue(){
-            simpleContract.getValue(function(a,b){
-               console.log('getValue callback');              
-              console.log(a);
-              console.log(b);  
-            });
-        },
         loadOpenGames(){
+          var self = this;
             apiService.get(this.$http, 'game', 'open').then(result => {
-               this.games = result.body;
+               self.games = result.body;
+               self.isLoading = false;
             }, error => {
               console.log(error)
             });
