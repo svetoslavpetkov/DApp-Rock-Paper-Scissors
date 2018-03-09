@@ -114,10 +114,10 @@ contract GameBoard {
         return createdGamesLog.length;
     }
     
-    function getCreatedGameData(uint index) public view returns(address,uint,uint){
+    function getCreatedGameData(uint index) public view returns(address player1,uint value,uint createdDate){
         require(createdGamesLog.length > index);
-        
-        return (createdGamesLog[index].player1, bidValue,createdGamesLog[index].createdDate );
+        GameCreatedData memory gameData = createdGamesLog[index];
+        return (player1 = gameData.player1, value = bidValue, createdDate =gameData.createdDate );
     }
     
     function isValidMove(uint8 move) public pure returns(bool){ return (move <= 2);}

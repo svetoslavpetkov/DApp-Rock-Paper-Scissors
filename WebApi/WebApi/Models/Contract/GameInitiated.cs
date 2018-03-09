@@ -9,13 +9,13 @@ namespace WebApi.Models.Contract
     [FunctionOutput]
     public class GameInitiated
     {
-        [Parameter("address", "", 1)]
+        [Parameter("address", "palyer1", 1)]
         public string Player1 { get; set; }
 
-        [Parameter("uint256", "", 2)]
+        [Parameter("uint256", "bidValue", 2)]
         public long Value { get; set; }
 
-        [Parameter("uint256", "", 3)]
+        [Parameter("uint256", "createdDate", 3)]
         public long CreatedDate { get; set; }
 
         public long GameID { get; set; }

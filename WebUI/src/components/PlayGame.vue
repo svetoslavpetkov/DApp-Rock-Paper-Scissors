@@ -1,7 +1,10 @@
 <template>
   <div>
     <h1>Play game {{$route.params.gameid}}</h1>
-    <h3>Other player: {{game.player1}}</h3>    
+    <h3>Other player: {{game.player1}}</h3>  
+    <h3>
+        {{curentUserAccount}}
+    </h3>  
     <div v-if="curentUserAccount == game.player1" class="alert alert-danger" role="alert">
       <h3>You are going to play against game created by yourself</h3>
     </div>
