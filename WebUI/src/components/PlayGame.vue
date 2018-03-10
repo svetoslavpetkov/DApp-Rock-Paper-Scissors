@@ -24,7 +24,6 @@
             <img class="moveImage" v-bind:class="[move.selecetedMove ==  optionalMove.value ? optionalMove.activeClass : optionalMove.inactiveClass]" v-on:click="move.selecetedMove = optionalMove.value" />          
         </span>
       </div>
-       <div>selcted option {{move.selecetedMove}}</div>
     </div>
     
     <div  v-if="isLoading">
@@ -32,7 +31,7 @@
     </div>
     <button v-if="!isLoading" class="btn btn-lg btn-primary" v-on:click="createGame" >Play the game</button>
     <div v-if="gameCreated" class="alert alert-success" role="alert">
-      Game created!
+      Game played see result <router-link herclass="nav-link" href="#" :to="{ name: 'game', params: { gameid: $route.params.gameid }}">gameid #{{$route.params.gameid}}</router-link>
     </div>
     <div v-if="hasError" class="alert alert-danger" role="alert">
       {{errorText}}

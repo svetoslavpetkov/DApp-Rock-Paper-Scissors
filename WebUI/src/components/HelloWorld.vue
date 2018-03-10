@@ -6,7 +6,11 @@
             <div class="row">
               <div class="col-sm-6 game" v-for="game in games" v-bind:key="game.gameID">
                 <div class="card">
-                  <div class="card-header">GameID: <strong>{{ game.gameID }}</strong></div>
+                  <div class="card-header">
+                    GameID: <strong>
+                      <router-link class="nav-link" href="#" :to="{ name: 'game', params: { gameid: game.gameID }}">{{game.gameID}}</router-link>
+                    </strong>
+                  </div>
                   <div class="card-body">
                     <p class="card-text">
                       Owner: 

@@ -63,8 +63,13 @@ namespace WebApi.Services
 
                 contractAddress = receipt.ContractAddress;
                 CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
-                CreateGame(GameMove.Paper, GameMove.Paper, GameMove.Paper);
-                CreateGame(GameMove.Scissors, GameMove.Scissors, GameMove.Scissors);
+                CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
+                CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
+                CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
+                CreateGame(GameMove.Rock, GameMove.Rock, GameMove.Rock);
+
+                CreateGame(GameMove.Paper, GameMove.Scissors, GameMove.Paper);
+                CreateGame(GameMove.Scissors, GameMove.Paper, GameMove.Scissors);
 
                 AcceptGame(0, GameMove.Paper, GameMove.Rock, GameMove.Rock);
                 var res = GetCompletedByIndex(0);
@@ -152,9 +157,16 @@ namespace WebApi.Services
 
         public CompletedGameData GetCompletedByGameID(long gameID)
         {
-            var getCreatedGameData = GetContract().GetFunction("getCompletedGameData");
-            var result = getCreatedGameData.CallDeserializingToObjectAsync<CompletedGameData>(gameID).GetAwaiter().GetResult();
-            return result;
+            try
+            {
+                var getCreatedGameData = GetContract().GetFunction("getCompletedGameData");
+                var result = getCreatedGameData.CallDeserializingToObjectAsync<CompletedGameData>(gameID).GetAwaiter().GetResult();
+                return result;
+            }
+            catch (Exception)
+            {
+            }
+            return null;
         }
 
         public long GetCompletedGamesCount()
@@ -182,20 +194,26 @@ namespace WebApi.Services
                 string winner = game.Winner == 1 ? game.Player1 : ( game.Winner == 2 ? game.Player2 : "");
                 string loser = game.Winner == 1 ? game.Player2 : (game.Winner == 2 ? game.Player1 : "");
 
-                if (!allPlayers.ContainsKey(winner))
+                if (winner != string.Empty)
                 {
-                    allPlayers.Add(winner, new Player() { Address = winner });
-                }
-                if (!allPlayers.ContainsKey(loser))
-                {
-                    allPlayers.Add(loser, new Player() { Address = loser });
-                }
 
-                allPlayers[winner].Wins++;
-                allPlayers[loser].Losses++;
+                    if (!allPlayers.ContainsKey(winner))
+                    {
+                        allPlayers.Add(winner, new Player() { Address = winner });
+                    }
+                    allPlayers[winner].Wins++;
+                }
+                if (loser != string.Empty)
+                {
+                    if (!allPlayers.ContainsKey(loser))
+                    {
+                        allPlayers.Add(loser, new Player() { Address = loser });
+                    }
+                    allPlayers[loser].Losses++;
+                }
             }
 
-            return allPlayers.Values.OrderBy(p => p.WinsOverLosses).Take(maxItems).ToList();
+            return allPlayers.Values.OrderByDescending(p => p.WinsOverLosses).Take(maxItems).ToList();
         }
     }
 }

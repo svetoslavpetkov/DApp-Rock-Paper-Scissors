@@ -17,7 +17,6 @@
             <img class="moveImage" v-bind:class="[move.selecetedMove ==  optionalMove.value ? optionalMove.activeClass : optionalMove.inactiveClass]" v-on:click="move.selecetedMove = optionalMove.value" />          
         </span>
       </div>
-       <div>selcted option {{move.selecetedMove}}</div>
     </div>
     
     <div  v-if="isLoading">

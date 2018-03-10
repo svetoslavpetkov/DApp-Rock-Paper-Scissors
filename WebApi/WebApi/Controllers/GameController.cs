@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models.Dto;
 using WebApi.Services;
 
 namespace WebApi.Controllers
@@ -39,7 +40,13 @@ namespace WebApi.Controllers
         [HttpGet("{gameID:int}")]
         public IActionResult GetByGameId(int gameID)
         {
-            return Ok(contactService.GetCompletedByGameID(gameID));
+            var started = contactService.GetCreatedGame(gameID);
+            var complted = contactService.GetCompletedByGameID(gameID);
+            if (complted != null)
+            {
+                return Ok(Game.FromCompletedGameData(complted));
+            }
+            return Ok(Game.FromGameInitated(started));
         }
 
         [HttpGet("created/{gameID:int}")]

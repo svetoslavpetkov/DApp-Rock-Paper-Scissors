@@ -94,7 +94,17 @@ div.game{
     margin-bottom: 20px;
 }
 
+.started{
+    color: orangered;    
+}
 
+.completed{
+    color: green;    
+}
+
+h3.winner{
+    color: green;    
+}
 
 div.pageLoader {
     border: 24px solid #f3f3f3;
