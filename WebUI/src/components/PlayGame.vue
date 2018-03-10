@@ -1,9 +1,8 @@
 <template>
   <div>
     <h1>Play game {{$route.params.gameid}}</h1>
-    <h3>Other player: {{game.player1}}</h3>  
-    <h3>
-        {{curentUserAccount}}
+    <h3>Other player:
+       <router-link class="nav-link" href="#" :to="{ name: 'player', params: { playerAddress: game.player1 }}">{{game.player1}}</router-link>   
     </h3>  
     <div v-if="curentUserAccount == game.player1" class="alert alert-danger" role="alert">
       <h3>You are going to play against game created by yourself</h3>
@@ -80,7 +79,7 @@ export default {
             this.hasError = false;
             self.gameCreated = false;             
             this.contractInstance.acceptGameRequest(this.$route.params.gameid,this.moves[0].selecetedMove,this.moves[1].selecetedMove,this.moves[2].selecetedMove
-              ,{from: web3.eth.defaultAccount, gas: 3000000, value: web3.toWei(100, 'finney')},function(error,result){
+              ,{from: web3.eth.defaultAccount, gas: 3000000, value: web3.toWei(1000, 'finney')},function(error,result){
                 console.log(error);
                 if(error){
                     var trimlength = error.message.length < 100 ? error.message.length : 100;
@@ -128,8 +127,5 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 </style>

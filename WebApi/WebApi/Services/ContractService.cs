@@ -84,7 +84,7 @@ namespace WebApi.Services
 
         public void CreateGame(GameMove move1, GameMove move2, GameMove move3)
         {
-            var value = Nethereum.Util.UnitConversion.Convert.ToWei(100, Nethereum.Util.UnitConversion.EthUnit.Finney);
+            var value = Nethereum.Util.UnitConversion.Convert.ToWei(1, Nethereum.Util.UnitConversion.EthUnit.Ether);
             HexBigInteger valueInHex = new HexBigInteger(value);
             var placeGameRequest = GetContract().GetFunction("placeGameRequest");
             var result = placeGameRequest.SendTransactionAsync(_account.Address, DefaultGas, valueInHex, (int)move1, (int)move2, (int)move3).GetAwaiter().GetResult();
@@ -178,7 +178,7 @@ namespace WebApi.Services
 
         public void AcceptGame(int gameID, GameMove move1, GameMove move2, GameMove move3)
         {
-            var value = Nethereum.Util.UnitConversion.Convert.ToWei(100, Nethereum.Util.UnitConversion.EthUnit.Finney);
+            var value = Nethereum.Util.UnitConversion.Convert.ToWei(1, Nethereum.Util.UnitConversion.EthUnit.Ether);
             HexBigInteger valueInHex = new HexBigInteger(value);
             var placeGameRequest = GetContract().GetFunction("acceptGameRequest");
             var result = placeGameRequest.SendTransactionAsync(_account.Address, DefaultGas, valueInHex, gameID, (int)move1, (int)move2, (int)move3).GetAwaiter().GetResult();

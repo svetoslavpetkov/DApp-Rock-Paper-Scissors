@@ -1,6 +1,6 @@
 pragma solidity ^0.4.19;
 contract GameBoard {
-    uint constant bidValue = 100 finney;
+    uint constant bidValue = 1000 finney;
     
     enum GameMove{
         Rock,
@@ -145,19 +145,19 @@ contract GameBoard {
 
         if(winner == 0){
             gameCompletedData.winner = 0;
-			gameCompletedData.player1.transfer(90 finney);
-			gameCompletedData.player2.transfer(90 finney);
-			collectedFees += 20 finney;
+			gameCompletedData.player1.transfer(900 finney);
+			gameCompletedData.player2.transfer(900 finney);
+			collectedFees += 200 finney;
 		}
         else if(winner == 1){
             gameCompletedData.winner = 1;
-			gameCompletedData.player1.transfer(190 finney);
-			collectedFees += 10 finney;
+			gameCompletedData.player1.transfer(1900 finney);
+			collectedFees += 100 finney;
 		}
         else{
             gameCompletedData.winner = 2;
-			gameCompletedData.player2.transfer(190 finney);
-			collectedFees += 10 finney;
+			gameCompletedData.player2.transfer(1900 finney);
+			collectedFees += 100 finney;
 		}
         
         completedGamesLog.push(gameCompletedData);

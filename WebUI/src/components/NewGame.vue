@@ -71,7 +71,7 @@ export default {
             this.hasError = false;
             self.gameCreated = false;             
             this.contractInstance.placeGameRequest(this.moves[0].selecetedMove,this.moves[1].selecetedMove,this.moves[2].selecetedMove
-              ,{from: web3.eth.defaultAccount, gas: 3000000, value: web3.toWei(100, 'finney')},function(error,result){
+              ,{from: web3.eth.defaultAccount, gas: 3000000, value: web3.toWei(1000, 'finney')},function(error,result){
                 console.log(error);
                 if(error){
                     var trimlength = error.message.length < 100 ? error.message.length : 100;
